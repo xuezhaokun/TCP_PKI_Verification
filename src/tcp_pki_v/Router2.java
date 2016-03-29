@@ -13,6 +13,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.*;
+
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 public class Router2 {
@@ -70,8 +72,9 @@ public class Router2 {
  		int publicKeySenderPort = 4445;
  		int client1MsgPort = 6789;
  		int toClient3Port = 5678;
- 		Router2.sendPublickey(router2_kp, publicKeySenderPort);
+ 		//Router2.sendPublickey(router2_kp, publicKeySenderPort);
  		byte[] msgFromClient1 = Router2.readMsgFromClient1(client1MsgPort);
+		System.out.println("MsgFromClient1 Size: " + msgFromClient1.length);
  		Router2.sendMsgToClient3(router2_kp, msgFromClient1, toClient3Port);
 	}
 

@@ -73,13 +73,13 @@ public class Client3 {
  		int client1PubkPort = 4444;
  		int router2PubkPort = 4445;
  		int msgFromRouter2Port = 5678;
- 		PublicKey client1_publickey= Client3.getPublicKey(client1PubkPort);
-		System.out.println("reply from client1: " + client1_publickey.toString());
- 		PublicKey router2_publickey= Client3.getPublicKey(router2PubkPort);
-		System.out.println("reply from router2: " + router2_publickey.toString());
+ 		//PublicKey client1_publickey= Client3.getPublicKey(client1PubkPort);
+		//System.out.println("reply from client1: " + client1_publickey.toString());
+ 		//PublicKey router2_publickey= Client3.getPublicKey(router2PubkPort);
+		//System.out.println("reply from router2: " + router2_publickey.toString());
 		byte[] msgFromRouter2 = Client3.readMsgFromRouter2(msgFromRouter2Port);
-		byte[] decryptedMsg = Client3.decryptMsg(msgFromRouter2, client1_publickey, router2_publickey);
-		System.out.println(Arrays.equals(decryptedMsg, hashedMsg));
+		//byte[] decryptedMsg = Client3.decryptMsg(msgFromRouter2, client1_publickey, router2_publickey);
+		//System.out.println(Arrays.equals(decryptedMsg, hashedMsg));
 	}
 
 }
