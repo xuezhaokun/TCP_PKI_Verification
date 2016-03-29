@@ -25,7 +25,7 @@ public class Router2 {
 		return kp;
 	}
 	
-	private static byte[] encrypt(byte[] inpBytes, PublicKey key, String xform) throws Exception {
+	private static byte[] encrypt(byte[] inpBytes, PrivateKey key, String xform) throws Exception {
 		Cipher cipher = Cipher.getInstance(xform);
 		cipher.init(Cipher.ENCRYPT_MODE, key);
 		return cipher.doFinal(inpBytes);
@@ -42,12 +42,37 @@ public class Router2 {
 		outToClient3.close();
 	}
 	
-	public static void main(String[] args) throws NoSuchAlgorithmException, UnknownHostException, IOException {
+	private static byte[] readMsgFromClient1(int portNumber) throws UnknownHostException, IOException, InvalidKeySpecException, NoSuchAlgorithmException{
+		ServerSocket client1MsgSocket = new ServerSocket(portNumber);
+		while(true){
+			Socket connectionSocket = client1MsgSocket.accept();
+			BufferedReader inFromClient1 = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream())); 
+			String msg = inFromClient1.readLine(); 
+			byte[] decodedMsg = Base64.getDecoder().decode(msg);
+			return decodedMsg;
+		}
+	}
+	
+	private static void sendMsgToClient3(KeyPair kp, byte[] msg,int portNumber) throws Exception {
+		String xform = "RSA/ECB/PKCS1Padding";
+		PrivateKey prvk = kp.getPrivate();
+		Socket router2Socket = new Socket("localhost", portNumber);
+		DataOutputStream outToClient3 = new DataOutputStream(router2Socket.getOutputStream());
+		byte[] encryptedMsg = encrypt(msg, prvk, xform);
+		String encodedMsg = Base64.getEncoder().encodeToString(encryptedMsg);
+		outToClient3.writeBytes(encodedMsg + '\n');
+		outToClient3.close();
+	}
+	
+	public static void main(String[] args) throws Exception {
 		String xform = "RSA/ECB/PKCS1Padding";
  		KeyPair router2_kp = Router2.generateKeyPair();
  		int publicKeySenderPort = 4445;
+ 		int client1MsgPort = 6789;
+ 		int toClient3Port = 5678;
  		Router2.sendPublickey(router2_kp, publicKeySenderPort);
-
+ 		byte[] msgFromClient1 = Router2.readMsgFromClient1(client1MsgPort);
+ 		Router2.sendMsgToClient3(router2_kp, msgFromClient1, toClient3Port);
 	}
 
 }

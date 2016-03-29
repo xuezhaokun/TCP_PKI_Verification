@@ -5,18 +5,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.security.*;
 import java.security.cert.*;
 import java.security.cert.Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-
 import javax.crypto.*;
 import java.util.Base64;
 import java.util.HashMap;
+
 public class Client1 {
 	private static String[] route = {"Client1", "Router2", "Client3"};
+	
 	public static KeyPair generateKeyPair () throws NoSuchAlgorithmException {
 		// Generate a key-pair
 		KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
@@ -25,14 +27,14 @@ public class Client1 {
 		return kp;
 	}
 	
-	private static byte[] encrypt(byte[] inpBytes, PublicKey key, String xform) throws Exception {
+	private static byte[] encrypt(byte[] inpBytes, PrivateKey key, String xform) throws Exception {
 		Cipher cipher = Cipher.getInstance(xform);
 		cipher.init(Cipher.ENCRYPT_MODE, key);
 		return cipher.doFinal(inpBytes);
 	}
 	
 	private static void sendPublickey(KeyPair kp, int portNumber) throws UnknownHostException, IOException{
-		String xform = "RSA/ECB/PKCS1Padding";
+		
 		BufferedReader inFromClient1 = new BufferedReader( new InputStreamReader(System.in));
 		Socket client1Socket = new Socket("localhost", portNumber);
 		DataOutputStream outToClient3 = new DataOutputStream(client1Socket.getOutputStream());
@@ -42,11 +44,25 @@ public class Client1 {
 		outToClient3.close();
 	}
 	
- 	public static void main(String[] args) throws NoSuchAlgorithmException, UnknownHostException, IOException {
- 		String xform = "RSA/ECB/PKCS1Padding";
+	private static void sendMsgToRouter2(KeyPair kp, int portNumber) throws Exception {
+		String xform = "RSA/ECB/PKCS1Padding";
+		String msg = "hello world";
+		byte[] hashedMsg = MD5Hash.MD5Hash(msg);
+		PrivateKey prvk = kp.getPrivate();
+		Socket client1Socket = new Socket("localhost", portNumber);
+		DataOutputStream outToRouter2 = new DataOutputStream(client1Socket.getOutputStream());
+		byte[] encryptedMsg = encrypt(hashedMsg, prvk, xform);
+		String encodedMsg = Base64.getEncoder().encodeToString(encryptedMsg);
+		outToRouter2.writeBytes(encodedMsg + '\n');
+		outToRouter2.close();
+	}
+	
+ 	public static void main(String[] args) throws Exception {
  		KeyPair client1_kp = Client1.generateKeyPair();
  		int publicKeySenderPort = 4444;
+ 		int msgPort = 6789;
  		Client1.sendPublickey(client1_kp, publicKeySenderPort);
+ 		Client1.sendMsgToRouter2(client1_kp, msgPort);
 	}
 
 }
