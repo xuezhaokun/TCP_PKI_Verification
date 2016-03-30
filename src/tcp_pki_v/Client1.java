@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.*;
 import java.security.*;
 import java.security.cert.*;
@@ -47,16 +48,33 @@ public class Client1 {
 	private static void sendMsgToRouter2(KeyPair kp, int portNumber) throws Exception {
 		String xform = "RSA/ECB/NoPadding";
 		String msg = "hello world";
-		byte[] hashedMsg = MD5Hash.MD5Hash(msg);
+		//MessageDigest hashedMsg = MessageDigest.getInstance("MD5"); 
+		//hashedMsg.update(msg.getBytes(), 0, msg.length());
+		//String hashedStringMsg = new BigInteger(1, hashedMsg.digest()).toString(64); 
+		//byte[] hashedMsg = MD5Hash.MD5Hash(msg);
 		
-		String encodedhash = Base64.getEncoder().encodeToString(hashedMsg);
-		System.out.println("hashed msg: " + encodedhash);
+		//String encodedhash = Base64.getEncoder().encodeToString(hashedMsg);
+		//System.out.println("hashed msg: " + encodedhash);
+		
+		String original = msg;
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		md.update(original.getBytes());
+		byte[] digest = md.digest();
+		StringBuffer sb = new StringBuffer();
+		for (byte b : digest) {
+			sb.append(String.format("%02x", b & 0xff));
+		}
+
+		System.out.println("original:" + original);
+		System.out.println("digested(hex):" + sb.toString());
+		
+		
 		
 		PrivateKey prvk = kp.getPrivate();
 		
 		Socket client1Socket = new Socket("localhost", portNumber);
 		DataOutputStream outToRouter2 = new DataOutputStream(client1Socket.getOutputStream());
-		byte[] encryptedMsg = encrypt(hashedMsg, prvk, xform);
+		byte[] encryptedMsg = encrypt(digest, prvk, xform);
 		String encodedMsg = Base64.getEncoder().encodeToString(encryptedMsg);
 		System.out.println("sending msg: " + encodedMsg);
 		outToRouter2.writeBytes(encodedMsg + '\n');

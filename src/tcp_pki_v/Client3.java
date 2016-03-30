@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.net.*;
 import java.security.*;
 import java.security.cert.*;
@@ -67,8 +68,17 @@ public class Client3 {
 		System.out.println("first decrypted msg: " + encodedByClient1);
 		
 		encryptedMsg = Client3.decrypt(encryptedMsg, client1_publickey, xform);
-		String encodedHashMsg = Base64.getEncoder().encodeToString(encryptedMsg);
-		System.out.println("second decrypted msg: " + encodedHashMsg);
+		//String encodedHashMsg = Hex.encodeHex(encryptedMsg);
+		StringBuffer sb = new StringBuffer();
+		for (byte b : encryptedMsg) {
+			sb.append(String.format("%02x", b & 0xff));
+		}
+
+		//System.out.println("original:" + original);
+
+		//byte[] decodedMsg = Base64.getDecoder().decode(sb.toString());
+		System.out.println("***digested(hex):" + sb.toString());
+		//System.out.println("second decrypted msg: " + new String(encryptedMsg));
 		
 		
 		return encryptedMsg;
@@ -77,11 +87,28 @@ public class Client3 {
 	
 	public static void main(String[] args) throws Exception {
 		String msg = "hello world";
-		byte[] hashedMsg = MD5Hash.MD5Hash(msg);
+		//MessageDigest hashedMsg = MessageDigest.getInstance("MD5"); 
+		//hashedMsg.update(msg.getBytes(), 0, msg.length());
+		//String hashedStringMsg = new BigInteger(1, hashedMsg.digest()).toString(64); 
+		//byte[] hashedMsg = MD5Hash.MD5Hash(msg);
 		
-		String encodedhash = Base64.getEncoder().encodeToString(hashedMsg);
-		System.out.println("hashed msg: " + encodedhash);
-		System.out.println("hashed msg size: " + hashedMsg.length);
+		//String encodedhash = Base64.getEncoder().encodeToString(hashedMsg);
+		//System.out.println("hashed msg: " + encodedhash);
+		//System.out.println("hashed msg size: " + hashedMsg.length);
+		
+		
+		String original = msg;
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		md.update(original.getBytes());
+		byte[] digest = md.digest();
+		StringBuffer sb = new StringBuffer();
+		for (byte b : digest) {
+			sb.append(String.format("%02x", b & 0xff));
+		}
+
+		System.out.println("original:" + original);
+		System.out.println("digested(hex):" + sb.toString());
+		
 		
  		KeyPair client3_kp = Client3.generateKeyPair();
  		int client1PubkPort = 4444;
@@ -94,12 +121,13 @@ public class Client3 {
 		String router2Msg = Base64.getEncoder().encodeToString(msgFromRouter2);
 		System.out.println("reading msg: " + router2Msg);
 		byte[] decryptedMsg = Client3.decryptMsg(msgFromRouter2, client1_publickey, router2_publickey);
-		System.out.println("decrypted msg size: " + decryptedMsg.length);
-		String encodedHash = Base64.getEncoder().encodeToString(decryptedMsg);
-		System.out.println("encoded hashed msg: " + encodedHash.length());
-		String hash = encodedHash.substring(encodedHash.length() - 24);
-		System.out.println("hash string: " + hash);
-		System.out.println(hash.length() + ":" + (new String(hashedMsg)).length());
+		//System.out.println("decrypted msg size: " + decryptedMsg.length);
+		//String encodedHash = Base64.getEncoder().encodeToString(decryptedMsg);
+		
+		//System.out.println("encoded hashed msg: " + encodedHash.length());
+		//String hash = encodedHash.substring(encodedHash.length() - 24);
+		//System.out.println("hash string: " + hash);
+		System.out.println(Arrays.equals(digest, decryptedMsg));
 	}
 
 }
