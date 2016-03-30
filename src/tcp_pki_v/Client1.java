@@ -45,7 +45,7 @@ public class Client1 {
 	}
 	
 	private static void sendMsgToRouter2(KeyPair kp, int portNumber) throws Exception {
-		String xform = "RSA/ECB/PKCS1Padding";
+		String xform = "RSA/ECB/NoPadding";
 		String msg = "hello world";
 		byte[] msgByte = msg.getBytes();
 		System.out.println("Size of msg: " + msgByte.length);
@@ -65,7 +65,7 @@ public class Client1 {
  		KeyPair client1_kp = Client1.generateKeyPair();
  		int publicKeySenderPort = 4444;
  		int msgPort = 6789;
- 		//Client1.sendPublickey(client1_kp, publicKeySenderPort);
+ 		Client1.sendPublickey(client1_kp, publicKeySenderPort);
  		Client1.sendMsgToRouter2(client1_kp, msgPort);
 	}
 

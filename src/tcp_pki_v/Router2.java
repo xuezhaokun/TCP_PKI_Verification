@@ -34,7 +34,7 @@ public class Router2 {
 	}
 	
 	private static void sendPublickey(KeyPair kp, int portNumber) throws UnknownHostException, IOException{
-		String xform = "RSA/ECB/PKCS1Padding";
+		String xform = "RSA/ECB/NoPadding";
 		BufferedReader inFromClient1 = new BufferedReader( new InputStreamReader(System.in));
 		Socket client1Socket = new Socket("localhost", portNumber);
 		DataOutputStream outToClient3 = new DataOutputStream(client1Socket.getOutputStream());
@@ -56,7 +56,7 @@ public class Router2 {
 	}
 	
 	private static void sendMsgToClient3(KeyPair kp, byte[] msg,int portNumber) throws Exception {
-		String xform = "RSA/ECB/PKCS1Padding";
+		String xform = "RSA/ECB/NoPadding";
 		PrivateKey prvk = kp.getPrivate();
 		Socket router2Socket = new Socket("localhost", portNumber);
 		DataOutputStream outToClient3 = new DataOutputStream(router2Socket.getOutputStream());
@@ -67,12 +67,12 @@ public class Router2 {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String xform = "RSA/ECB/PKCS1Padding";
+		String xform = "RSA/ECB/NoPadding";
  		KeyPair router2_kp = Router2.generateKeyPair();
  		int publicKeySenderPort = 4445;
  		int client1MsgPort = 6789;
  		int toClient3Port = 5678;
- 		//Router2.sendPublickey(router2_kp, publicKeySenderPort);
+ 		Router2.sendPublickey(router2_kp, publicKeySenderPort);
  		byte[] msgFromClient1 = Router2.readMsgFromClient1(client1MsgPort);
 		System.out.println("MsgFromClient1 Size: " + msgFromClient1.length);
  		Router2.sendMsgToClient3(router2_kp, msgFromClient1, toClient3Port);

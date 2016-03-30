@@ -59,7 +59,7 @@ public class Client3 {
 	}
 	
 	private static byte[] decryptMsg(byte[] encryptedMsg, PublicKey client1_publickey, PublicKey router2_publickey) throws Exception {
-		String xform = "RSA/ECB/PKCS1Padding";
+		String xform = "RSA/ECB/NoPadding";
 		byte[] decryptedRouter2 = Client3.decrypt(encryptedMsg, router2_publickey, xform);
 		byte[] decryptedClient1 = Client3.decrypt(decryptedRouter2, client1_publickey, xform);
 		return decryptedClient1;
@@ -73,13 +73,13 @@ public class Client3 {
  		int client1PubkPort = 4444;
  		int router2PubkPort = 4445;
  		int msgFromRouter2Port = 5678;
- 		//PublicKey client1_publickey= Client3.getPublicKey(client1PubkPort);
+ 		PublicKey client1_publickey= Client3.getPublicKey(client1PubkPort);
 		//System.out.println("reply from client1: " + client1_publickey.toString());
- 		//PublicKey router2_publickey= Client3.getPublicKey(router2PubkPort);
+ 		PublicKey router2_publickey= Client3.getPublicKey(router2PubkPort);
 		//System.out.println("reply from router2: " + router2_publickey.toString());
 		byte[] msgFromRouter2 = Client3.readMsgFromRouter2(msgFromRouter2Port);
-		//byte[] decryptedMsg = Client3.decryptMsg(msgFromRouter2, client1_publickey, router2_publickey);
-		//System.out.println(Arrays.equals(decryptedMsg, hashedMsg));
+		byte[] decryptedMsg = Client3.decryptMsg(msgFromRouter2, client1_publickey, router2_publickey);
+		System.out.println(Arrays.equals(decryptedMsg, hashedMsg));
 	}
 
 }
