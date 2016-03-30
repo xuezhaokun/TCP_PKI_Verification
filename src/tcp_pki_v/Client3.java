@@ -99,7 +99,6 @@ public class Client3 {
 		System.out.println("encoded hashed msg: " + encodedHash.length());
 		String hash = encodedHash.substring(encodedHash.length() - 24);
 		System.out.println("hash string: " + hash);
-		
 		System.out.println(hash.length() + ":" + (new String(hashedMsg)).length());
 	}
 
