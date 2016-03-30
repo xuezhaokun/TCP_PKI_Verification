@@ -47,11 +47,13 @@ public class Client1 {
 	private static void sendMsgToRouter2(KeyPair kp, int portNumber) throws Exception {
 		String xform = "RSA/ECB/NoPadding";
 		String msg = "hello world";
-		byte[] msgByte = msg.getBytes();
-		System.out.println("Size of msg: " + msgByte.length);
 		byte[] hashedMsg = MD5Hash.MD5Hash(msg);
-		System.out.println("Size after hashed: " + hashedMsg.length);
+		
+		String encodedhash = Base64.getEncoder().encodeToString(hashedMsg);
+		System.out.println("hashed msg: " + encodedhash);
+		
 		PrivateKey prvk = kp.getPrivate();
+		
 		Socket client1Socket = new Socket("localhost", portNumber);
 		DataOutputStream outToRouter2 = new DataOutputStream(client1Socket.getOutputStream());
 		byte[] encryptedMsg = encrypt(hashedMsg, prvk, xform);

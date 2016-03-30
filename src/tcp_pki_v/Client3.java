@@ -51,35 +51,56 @@ public class Client3 {
 		ServerSocket router2MsgSocket = new ServerSocket(portNumber);
 		while(true){
 			Socket connectionSocket = router2MsgSocket.accept();
-			BufferedReader inFromClient1 = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream())); 
-			String msg = inFromClient1.readLine(); 
+			BufferedReader inFromRouter2 = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream())); 
+			String msg = inFromRouter2.readLine(); 
 			byte[] decodedMsg = Base64.getDecoder().decode(msg);
+			
+			router2MsgSocket.close();
 			return decodedMsg;
 		}
 	}
 	
 	private static byte[] decryptMsg(byte[] encryptedMsg, PublicKey client1_publickey, PublicKey router2_publickey) throws Exception {
 		String xform = "RSA/ECB/NoPadding";
-		byte[] decryptedRouter2 = Client3.decrypt(encryptedMsg, router2_publickey, xform);
-		byte[] decryptedClient1 = Client3.decrypt(decryptedRouter2, client1_publickey, xform);
-		return decryptedClient1;
+		encryptedMsg = Client3.decrypt(encryptedMsg, router2_publickey, xform);
+		String encodedByClient1 = Base64.getEncoder().encodeToString(encryptedMsg);
+		System.out.println("first decrypted msg: " + encodedByClient1);
+		
+		encryptedMsg = Client3.decrypt(encryptedMsg, client1_publickey, xform);
+		String encodedHashMsg = Base64.getEncoder().encodeToString(encryptedMsg);
+		System.out.println("second decrypted msg: " + encodedHashMsg);
+		
+		
+		return encryptedMsg;
 	}
 	
 	
 	public static void main(String[] args) throws Exception {
 		String msg = "hello world";
 		byte[] hashedMsg = MD5Hash.MD5Hash(msg);
+		
+		String encodedhash = Base64.getEncoder().encodeToString(hashedMsg);
+		System.out.println("hashed msg: " + encodedhash);
+		System.out.println("hashed msg size: " + hashedMsg.length);
+		
  		KeyPair client3_kp = Client3.generateKeyPair();
  		int client1PubkPort = 4444;
  		int router2PubkPort = 4445;
  		int msgFromRouter2Port = 5678;
- 		PublicKey client1_publickey= Client3.getPublicKey(client1PubkPort);
-		//System.out.println("reply from client1: " + client1_publickey.toString());
+
  		PublicKey router2_publickey= Client3.getPublicKey(router2PubkPort);
-		//System.out.println("reply from router2: " + router2_publickey.toString());
+ 		PublicKey client1_publickey= Client3.getPublicKey(client1PubkPort);
 		byte[] msgFromRouter2 = Client3.readMsgFromRouter2(msgFromRouter2Port);
+		String router2Msg = Base64.getEncoder().encodeToString(msgFromRouter2);
+		System.out.println("reading msg: " + router2Msg);
 		byte[] decryptedMsg = Client3.decryptMsg(msgFromRouter2, client1_publickey, router2_publickey);
-		System.out.println(Arrays.equals(decryptedMsg, hashedMsg));
+		System.out.println("decrypted msg size: " + decryptedMsg.length);
+		String encodedHash = Base64.getEncoder().encodeToString(decryptedMsg);
+		System.out.println("encoded hashed msg: " + encodedHash.length());
+		String hash = encodedHash.substring(encodedHash.length() - 24);
+		System.out.println("hash string: " + hash);
+		
+		System.out.println(hash.length() + ":" + (new String(hashedMsg)).length());
 	}
 
 }

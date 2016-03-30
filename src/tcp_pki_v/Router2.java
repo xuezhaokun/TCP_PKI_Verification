@@ -51,6 +51,7 @@ public class Router2 {
 			BufferedReader inFromClient1 = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream())); 
 			String msg = inFromClient1.readLine(); 
 			byte[] decodedMsg = Base64.getDecoder().decode(msg);
+			client1MsgSocket.close();
 			return decodedMsg;
 		}
 	}
@@ -62,11 +63,13 @@ public class Router2 {
 		DataOutputStream outToClient3 = new DataOutputStream(router2Socket.getOutputStream());
 		byte[] encryptedMsg = encrypt(msg, prvk, xform);
 		String encodedMsg = Base64.getEncoder().encodeToString(encryptedMsg);
+		System.out.println("sending msg: " + encodedMsg);
 		outToClient3.writeBytes(encodedMsg + '\n');
 		outToClient3.close();
 	}
 	
 	public static void main(String[] args) throws Exception {
+
 		String xform = "RSA/ECB/NoPadding";
  		KeyPair router2_kp = Router2.generateKeyPair();
  		int publicKeySenderPort = 4445;
