@@ -17,7 +17,7 @@ import java.util.Base64;
 import java.util.HashMap;
 
 public class Client1 {
-	private static String[] route = {"Client1", "Router2", "Client3"};
+	private static String[] route = Planner.route;
 	
 	public static KeyPair generateKeyPair () throws NoSuchAlgorithmException {
 		// Generate a key-pair

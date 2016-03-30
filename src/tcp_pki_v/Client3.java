@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 public class Client3 {
-	private static String[] route = {"Client1", "Router2", "Client3"};
+	private static String[] route = Planner.route;
 	private static List<PublicKey> publickeys;
 	public static KeyPair generateKeyPair () throws NoSuchAlgorithmException {
 		// Generate a key-pair
