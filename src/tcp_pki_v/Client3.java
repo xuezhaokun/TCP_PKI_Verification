@@ -79,9 +79,11 @@ public class Client3 {
 		//byte[] decodedMsg = Base64.getDecoder().decode(sb.toString());
 		System.out.println("***digested(hex):" + sb.toString());
 		//System.out.println("second decrypted msg: " + new String(encryptedMsg));
+		//System.out.println("encoded hashed msg: " + encodedHash.length());
+		String hash = sb.substring(sb.length() - 32);
+		System.out.println("hash string length: " + hash.getBytes("UTF-8").length);
 		
-		
-		return encryptedMsg;
+		return hash.getBytes("UTF-8");
 	}
 	
 	
@@ -125,9 +127,9 @@ public class Client3 {
 		//String encodedHash = Base64.getEncoder().encodeToString(decryptedMsg);
 		
 		//System.out.println("encoded hashed msg: " + encodedHash.length());
-		//String hash = encodedHash.substring(encodedHash.length() - 24);
-		//System.out.println("hash string: " + hash);
-		System.out.println(Arrays.equals(digest, decryptedMsg));
+		//String hash = encodedHash.substring(encodedHash.length() - 32);
+		System.out.println("digest length: " + sb.length());
+		System.out.println(Arrays.equals(sb.toString().getBytes("UTF-8"), decryptedMsg));
 	}
 
 }

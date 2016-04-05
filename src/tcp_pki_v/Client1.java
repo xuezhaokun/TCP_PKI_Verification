@@ -51,11 +51,6 @@ public class Client1 {
 		//MessageDigest hashedMsg = MessageDigest.getInstance("MD5"); 
 		//hashedMsg.update(msg.getBytes(), 0, msg.length());
 		//String hashedStringMsg = new BigInteger(1, hashedMsg.digest()).toString(64); 
-		//byte[] hashedMsg = MD5Hash.MD5Hash(msg);
-		
-		//String encodedhash = Base64.getEncoder().encodeToString(hashedMsg);
-		//System.out.println("hashed msg: " + encodedhash);
-		
 		String original = msg;
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		md.update(original.getBytes());
@@ -67,7 +62,6 @@ public class Client1 {
 
 		System.out.println("original:" + original);
 		System.out.println("digested(hex):" + sb.toString());
-		
 		
 		
 		PrivateKey prvk = kp.getPrivate();
