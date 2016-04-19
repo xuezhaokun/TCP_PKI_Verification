@@ -47,21 +47,20 @@ public class Client1 {
 	
 	private static void sendMsgToRouter2(KeyPair kp, int portNumber) throws Exception {
 		String xform = "RSA/ECB/NoPadding";
-		String msg = "hello world";
+		String msg;
+		BufferedReader inFromClient = new BufferedReader( new InputStreamReader(System.in)); 
+		msg = inFromClient.readLine();
+		//String msg = "hello world";
 		//MessageDigest hashedMsg = MessageDigest.getInstance("MD5"); 
 		//hashedMsg.update(msg.getBytes(), 0, msg.length());
 		//String hashedStringMsg = new BigInteger(1, hashedMsg.digest()).toString(64); 
+		
 		String original = msg;
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		md.update(original.getBytes());
 		byte[] digest = md.digest();
-		StringBuffer sb = new StringBuffer();
-		for (byte b : digest) {
-			sb.append(String.format("%02x", b & 0xff));
-		}
 
 		System.out.println("original:" + original);
-		System.out.println("digested(hex):" + sb.toString());
 		
 		
 		PrivateKey prvk = kp.getPrivate();
